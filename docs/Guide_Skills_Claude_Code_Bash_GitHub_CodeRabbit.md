@@ -193,10 +193,10 @@ Le script `generate-summary.sh` produit :
 
 ### Sortie
 
-Les données sont stockées dans `.scd/pr-data/` et un résumé est affiché à l'utilisateur avec :
+Les données sont stockées dans `.scd/github-pr-collector/data/pr-data/` et un résumé est affiché à l'utilisateur avec :
 - Nombre de PR analysées
-- Distribution des types de commentaires CodeRabbit
-- Principales préoccupations identifiées
+- Distribution des commentaires par sévérité
+- Statistiques par PR
 - Lien vers les fichiers détaillés générés
 
 ## Gestion des Erreurs
@@ -421,7 +421,7 @@ EOF
     done
     
     echo "- **Pull Requests analysées :** $pr_count" >> "$report_file"
-    echo "- **Données stockées dans :** \`.scd/pr-data/\`" >> "$report_file"
+    echo "- **Données stockées dans :** \`.scd/github-pr-collector/data/pr-data/\`" >> "$report_file"
     echo "" >> "$report_file"
     
     if [[ $pr_count -gt 0 ]]; then
@@ -1260,7 +1260,7 @@ dependencies:
 
 ## Objectif
 
-Ce skill analyse les données de review CodeRabbit préalablement collectées et stockées dans `.scd/pr-data/` pour générer des insights approfondis, des tendances et des recommandations d'amélioration pour l'équipe de développement.
+Ce skill analyse les données de review des agents IA préalablement collectées et stockées dans `.scd/github-pr-collector/data/pr-data/` pour générer des insights approfondis, des tendances et des recommandations d'amélioration pour l'équipe de développement.
 
 ## Processus d'Analyse
 
