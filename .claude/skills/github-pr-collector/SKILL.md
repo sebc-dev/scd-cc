@@ -23,22 +23,22 @@ Le skill utilise le script `collect-pr-data.sh` pour :
 - Pour chaque PR, extraire les métadonnées complètes
 - Télécharger tous les commentaires de review
 
-### 2. Extraction des Métadonnées des Agents IA
+### 2. Extraction des Métadonnées des Commentaires
 
-Via `parse-review-agents.sh`, le skill :
-- Identifie les commentaires provenant des agents IA (CodeRabbit, Copilot, Codex, etc.)
-- Extrait les métadonnées de classification (⚠️ Potential issue, 🟠 Major, etc.)
-- Classe les commentaires par agent, type et importance
-- Crée une structure organisée : PR > Importance > Commentaire individuel
-- Architecture extensible pour supporter de nouveaux agents
+Le script intégré extrait automatiquement :
+- Les métadonnées des commentaires (id, auteur, URL)
+- La sévérité via emojis (🔴 Critical, 🟠 Major, 🟡 Minor, 🔵 Trivial)
+- Le titre et la description de chaque commentaire
+- Classification automatique par dossiers de sévérité
+- Génération d'une checklist triée par priorité
 
 ### 3. Génération de Résumés
 
-Le script `generate-summary.sh` produit :
-- Validation de chaque étape du processus avec indicateurs visuels
-- Statistiques concises par PR et globales
-- Fichier `summary.md` par PR avec métriques essentielles
-- Rapport global `global-summary.md` avec vue d'ensemble
+Le script génère automatiquement :
+- Un résumé détaillé par PR avec statistiques par sévérité
+- Un rapport global `pr-analysis-report.md` avec vue d'ensemble
+- Une checklist de suivi des commentaires triée par priorité
+- Des fichiers Markdown individuels pour chaque commentaire
 
 ## Utilisation
 
@@ -50,21 +50,31 @@ Le script `generate-summary.sh` produit :
 
 ### Sortie
 
-Les données sont stockées dans `.scd/github-pr-collector/data/pr-data/` avec la structure :
+Les données sont stockées dans `.scd/github-pr-collector/` avec la structure :
 ```
-pr-{number}/
-├── 🔴-critical/     # Commentaires critiques
-├── 🟠-major/        # Commentaires majeurs  
-├── 🟡-minor/        # Commentaires mineurs
-├── 🔵-trivial/      # Commentaires triviaux
-├── summary.md       # Résumé de la PR
-└── data.json        # Données brutes
+.scd/github-pr-collector/
+├── config/
+│   ├── agents-patterns.json      # Configuration des agents IA
+│   └── severity-mapping.json     # Mapping de sévérité
+├── cache/                         # Cache temporaire (auto-nettoyé)
+├── data/
+│   └── pr-data/
+│       ├── pr-{number}/
+│       │   ├── 🔴 Critical/      # Commentaires critiques
+│       │   ├── 🟠 Major/         # Commentaires majeurs  
+│       │   ├── 🟡 Minor/         # Commentaires mineurs
+│       │   ├── 🔵 Trivial/       # Commentaires triviaux
+│       │   ├── Unclassified/     # Commentaires non classés
+│       │   ├── COMMENTS_CHECKLIST.md  # Checklist triée par priorité
+│       │   └── summary.md        # Résumé de la PR
+│       └── pr-analysis-report.md # Rapport global
+└── collect-pr.log                # Logs d'exécution
 ```
 
 Un résumé est affiché à l'utilisateur avec :
 - Nombre de PR analysées
-- Distribution des types de commentaires par agent
-- Principales préoccupations identifiées
+- Distribution des commentaires par sévérité
+- Statistiques détaillées par PR
 - Lien vers les fichiers détaillés générés
 
 ## Gestion des Erreurs
@@ -78,6 +88,8 @@ Le skill gère gracieusement :
 ## Référence
 
 Les scripts utilisent les ressources suivantes :
-- `scripts/collect-pr-data.sh` - Collection GitHub CLI
-- `scripts/parse-review-agents.sh` - Parsing jq des métadonnées multi-agents
-- `scripts/generate-summary.sh` - Génération résumés avec validation visuelle
+- `scripts/collect-pr-data.sh` - Script principal de collecte et extraction
+- `scripts/exemple.sh` - Script d'exemple pour l'extraction de métadonnées
+- `.scd/github-pr-collector/config/` - Fichiers de configuration JSON
+  - `agents-patterns.json` - Patterns de détection des agents IA
+  - `severity-mapping.json` - Configuration des niveaux de sévérité

@@ -92,9 +92,9 @@ trap 'rm -f "$TEMP_FILE"' EXIT  # Cleanup on any exit
 ```
 
 ### Directory Conventions
-- Skills should organize output in `.scd/pr-data/pr-{number}/{severity}/`
-- Severity folders: `🔴-critical/`, `🟠-major/`, `🟡-minor/`, `🔵-trivial/`
-- Each PR gets `summary.md` and `data.json`
+- Skills should organize output in `.scd/github-pr-collector/data/pr-data/pr-{number}/{severity}/`
+- Severity folders: `🔴 Critical/`, `🟠 Major/`, `🟡 Minor/`, `🔵 Trivial/`
+- Each PR gets `summary.md` and `COMMENTS_CHECKLIST.md`
 
 ### Installation Script Pattern
 See `install/install.sh` for the canonical pattern:
