@@ -1,0 +1,380 @@
+name: 🔒 Security & Quality Checks
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+  push:
+    branches: [ main, master, develop ]
+  workflow_dispatch: # Permet l'exécution manuelle
+
+env:
+  # Configuration globale pour ShellCheck
+  SHELLCHECK_OPTS: "-e SC1091 -e SC2164"  # Ignore source et cd warnings pour plus de flexibilité
+
+jobs:
+  shellcheck:
+    name: 🐚 ShellCheck Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Nécessaire pour l'analyse différentielle
+
+      - name: 🔍 Find Shell Scripts
+        id: find-scripts
+        run: |
+          # Recherche tous les fichiers shell dans le projet
+          SCRIPTS=$(find . -type f \( -name "*.sh" -o -name "*.bash" -o -name "*.ksh" \) | grep -v ".git" | sort)
+          if [ -z "$SCRIPTS" ]; then
+            echo "No shell scripts found"
+            echo "scripts-found=false" >> $GITHUB_OUTPUT
+          else
+            echo "Found shell scripts:"
+            echo "$SCRIPTS"
+            echo "scripts-found=true" >> $GITHUB_OUTPUT
+            # Sauvegarde la liste pour les autres étapes
+            echo "$SCRIPTS" > scripts-list.txt
+          fi
+
+      - name: 📋 Upload Scripts List
+        if: steps.find-scripts.outputs.scripts-found == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: scripts-list
+          path: scripts-list.txt
+
+      - name: 🔍 Run ShellCheck with reviewdog
+        if: steps.find-scripts.outputs.scripts-found == 'true'
+        uses: reviewdog/action-shellcheck@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review  # Commentaires directement sur la PR
+          path: "."
+          pattern: "*.sh"
+          exclude: "./.git/**"
+          check_all_files_with_shebangs: true
+          severity: error
+          fail_on_error: true
+
+      - name: 🔍 Fallback ShellCheck (si reviewdog échoue)
+        if: failure() && steps.find-scripts.outputs.scripts-found == 'true'
+        run: |
+          echo "🔄 Running fallback ShellCheck analysis..."
+          
+          # Installation de ShellCheck si nécessaire
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y shellcheck
+          fi
+          
+          # Analyse de tous les scripts trouvés
+          EXIT_CODE=0
+          while IFS= read -r script; do
+            if [ -f "$script" ]; then
+              echo "🔍 Analyzing: $script"
+              if ! shellcheck "$script"; then
+                EXIT_CODE=1
+              fi
+            fi
+          done < scripts-list.txt
+          
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ ShellCheck found issues in one or more scripts"
+            exit 1
+          else
+            echo "✅ All scripts passed ShellCheck analysis"
+          fi
+
+  security-scan:
+    name: 🔐 Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    needs: shellcheck
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔒 Run Bandit Security Scan
+        uses: tj-actions/bandit@v5.1
+        with:
+          options: "-r . -f json -o bandit-report.json"
+          # Continue même si des problèmes sont trouvés pour générer le rapport
+          exit_zero: true
+
+      - name: 📋 Upload Security Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-report
+          path: bandit-report.json
+
+      - name: 🔍 Check for Hardcoded Secrets
+        run: |
+          echo "🔍 Scanning for potential hardcoded secrets..."
+          
+          # Recherche de patterns suspects dans les scripts
+          EXIT_CODE=0
+          
+          # Mots de passe en clair
+          if grep -r -i -n --include="*.sh" --include="*.bash" \
+             -E "(password|passwd|pwd)\s*=\s*['\"][^'\"]{3,}" . 2>/dev/null; then
+            echo "❌ Potential hardcoded passwords found"
+            EXIT_CODE=1
+          fi
+          
+          # Clés API suspectes
+          if grep -r -i -n --include="*.sh" --include="*.bash" \
+             -E "(api[_-]?key|apikey|access[_-]?key)\s*=\s*['\"][^'\"]{10,}" . 2>/dev/null; then
+            echo "❌ Potential hardcoded API keys found"
+            EXIT_CODE=1
+          fi
+          
+          # Tokens suspects
+          if grep -r -i -n --include="*.sh" --include="*.bash" \
+             -E "(token|bearer)\s*=\s*['\"][^'\"]{10,}" . 2>/dev/null; then
+            echo "❌ Potential hardcoded tokens found"
+            EXIT_CODE=1
+          fi
+          
+          # URLs avec credentials
+          if grep -r -n --include="*.sh" --include="*.bash" \
+             -E "https?://[^:]+:[^@]+@" . 2>/dev/null; then
+            echo "❌ URLs with embedded credentials found"
+            EXIT_CODE=1
+          fi
+          
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "✅ No obvious hardcoded secrets found"
+          else
+            echo ""
+            echo "🔒 SECURITY RECOMMENDATION:"
+            echo "   - Use environment variables for secrets"
+            echo "   - Consider using .env files (add to .gitignore)"
+            echo "   - For production: use secrets managers (AWS Secrets Manager, HashiCorp Vault, etc.)"
+            exit $EXIT_CODE
+          fi
+
+  permissions-check:
+    name: 🔐 File Permissions Check
+    runs-on: ubuntu-latest
+    needs: shellcheck
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Check File Permissions
+        run: |
+          echo "🔍 Checking file permissions for security best practices..."
+          
+          EXIT_CODE=0
+          
+          # Vérification des permissions des scripts
+          echo "📋 Script files permissions:"
+          find . -type f \( -name "*.sh" -o -name "*.bash" \) -not -path "./.git/*" | while read -r file; do
+            perms=$(stat -c "%a" "$file")
+            echo "  $file: $perms"
+            
+            # Les scripts ne devraient pas être world-writable (pas de 7 en 3ème position)
+            if [[ $perms == *7 ]]; then
+              echo "❌ WARNING: $file is world-writable ($perms)"
+              EXIT_CODE=1
+            fi
+            
+            # Les scripts devraient être exécutables par le propriétaire
+            first_digit=${perms:0:1}
+            if [[ $first_digit -lt 7 ]] && [[ $first_digit -ne 6 ]] && [[ $first_digit -ne 4 ]]; then
+              echo "⚠️  INFO: $file might not be executable by owner ($perms)"
+            fi
+          done
+          
+          # Vérification des fichiers de configuration sensibles
+          echo ""
+          echo "📋 Configuration files permissions:"
+          find . -name "*.env*" -o -name "*.key" -o -name "*.pem" -o -name "*secret*" -not -path "./.git/*" 2>/dev/null | while read -r file; do
+            if [ -f "$file" ]; then
+              perms=$(stat -c "%a" "$file")
+              echo "  $file: $perms"
+              
+              # Les fichiers sensibles ne devraient pas être lisibles par les autres
+              if [[ $perms == *4 ]] || [[ $perms == *5 ]] || [[ $perms == *6 ]] || [[ $perms == *7 ]]; then
+                echo "❌ WARNING: Sensitive file $file is readable by others ($perms)"
+                EXIT_CODE=1
+              fi
+            fi
+          done
+          
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "✅ File permissions look secure"
+          else
+            echo ""
+            echo "🔒 SECURITY RECOMMENDATION:"
+            echo "   - Use 'chmod 755' or 'chmod 750' for executable scripts"
+            echo "   - Use 'chmod 600' for secret/credential files"
+            echo "   - Avoid world-writable permissions (777, 666, etc.)"
+          fi
+          
+          exit $EXIT_CODE
+
+  best-practices-check:
+    name: 📋 Best Practices Validation
+    runs-on: ubuntu-latest
+    needs: shellcheck
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Check Bash Best Practices
+        run: |
+          echo "🔍 Checking for bash best practices implementation..."
+          
+          EXIT_CODE=0
+          WARNINGS=0
+          
+          # Vérification que les scripts utilisent le mode strict
+          echo "📋 Checking for strict mode (set -euo pipefail):"
+          find . -type f \( -name "*.sh" -o -name "*.bash" \) -not -path "./.git/*" | while read -r script; do
+            if [ -f "$script" ]; then
+              echo "  Checking: $script"
+              
+              # Vérification du shebang
+              if ! head -1 "$script" | grep -q "^#!/.*bash"; then
+                echo "    ⚠️  No bash shebang found"
+                WARNINGS=$((WARNINGS + 1))
+              fi
+              
+              # Vérification du mode strict
+              if ! grep -q "set -euo pipefail" "$script" && ! grep -q "set -[a-z]*e[a-z]*u[a-z]*o[a-z]* pipefail" "$script"; then
+                echo "    ❌ Missing 'set -euo pipefail' - strict mode not enabled"
+                EXIT_CODE=1
+              else
+                echo "    ✅ Strict mode enabled"
+              fi
+              
+              # Vérification de l'utilisation de guillemets pour les variables
+              unquoted_vars=$(grep -n '\$[A-Za-z_][A-Za-z0-9_]*[^"]' "$script" | grep -v '#' | wc -l)
+              if [ "$unquoted_vars" -gt 5 ]; then
+                echo "    ⚠️  Many potentially unquoted variables found (review manually)"
+                WARNINGS=$((WARNINGS + 1))
+              fi
+              
+              # Vérification de l'utilisation de trap pour le nettoyage
+              if grep -q "mktemp\|tempfile" "$script" && ! grep -q "trap.*EXIT" "$script"; then
+                echo "    ⚠️  Temporary files used but no EXIT trap found"
+                WARNINGS=$((WARNINGS + 1))
+              fi
+            fi
+          done
+          
+          echo ""
+          echo "📊 Summary:"
+          echo "  - Errors: $EXIT_CODE"
+          echo "  - Warnings: $WARNINGS"
+          
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "✅ All critical best practices are implemented"
+            if [ $WARNINGS -gt 0 ]; then
+              echo "⚠️  Some recommendations could be applied (see warnings above)"
+            fi
+          else
+            echo ""
+            echo "📋 REQUIRED FIXES:"
+            echo "   - Add 'set -euo pipefail' at the beginning of all scripts"
+            echo "   - This enables strict error handling and prevents silent failures"
+            echo ""
+            echo "📖 Reference: docs/bash/Sécurisation des Scripts Bash _ Bonnes Pratiques.md"
+          fi
+          
+          exit $EXIT_CODE
+
+  summary:
+    name: 📊 Security Summary
+    runs-on: ubuntu-latest
+    needs: [shellcheck, security-scan, permissions-check, best-practices-check]
+    if: always()
+    
+    steps:
+      - name: 📥 Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: 📊 Generate Security Summary
+        run: |
+          echo "# 🔒 Security & Quality Analysis Summary" > security-summary.md
+          echo "" >> security-summary.md
+          echo "## 📋 Job Results" >> security-summary.md
+          echo "" >> security-summary.md
+          
+          # Fonction pour ajouter le statut d'un job
+          add_job_status() {
+            local job_name=$1
+            local job_result=$2
+            local icon
+            
+            case $job_result in
+              "success") icon="✅" ;;
+              "failure") icon="❌" ;;
+              "cancelled") icon="⏸️" ;;
+              "skipped") icon="⏭️" ;;
+              *) icon="❓" ;;
+            esac
+            
+            echo "- $icon **$job_name**: $job_result" >> security-summary.md
+          }
+          
+          # Ajout des résultats (ces variables sont automatiquement disponibles)
+          add_job_status "ShellCheck Analysis" "${{ needs.shellcheck.result }}"
+          add_job_status "Security Scan" "${{ needs.security-scan.result }}"
+          add_job_status "Permissions Check" "${{ needs.permissions-check.result }}"
+          add_job_status "Best Practices" "${{ needs.best-practices-check.result }}"
+          
+          echo "" >> security-summary.md
+          echo "## 🎯 Recommendations" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "Based on the analysis, here are the key security recommendations:" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "### 🐚 Shell Script Security" >> security-summary.md
+          echo "- Always use \`set -euo pipefail\` for strict error handling" >> security-summary.md
+          echo "- Quote all variable expansions: \`\"\$variable\"\`" >> security-summary.md
+          echo "- Use absolute paths for system commands" >> security-summary.md
+          echo "- Implement proper cleanup with \`trap\` functions" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "### 🔐 Secrets Management" >> security-summary.md
+          echo "- Never hardcode secrets in scripts" >> security-summary.md
+          echo "- Use environment variables or .env files (gitignored)" >> security-summary.md
+          echo "- Consider secrets managers for production" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "### 📁 File Permissions" >> security-summary.md
+          echo "- Scripts: \`chmod 755\` or \`chmod 750\`" >> security-summary.md
+          echo "- Secret files: \`chmod 600\`" >> security-summary.md
+          echo "- Avoid world-writable permissions" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "---" >> security-summary.md
+          echo "📖 **Full Guide**: [docs/bash/Sécurisation des Scripts Bash _ Bonnes Pratiques.md](docs/bash/Sécurisation%20des%20Scripts%20Bash%20_%20Bonnes%20Pratiques.md)" >> security-summary.md
+          
+          # Affichage du résumé
+          cat security-summary.md
+
+      - name: 📋 Upload Security Summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-summary
+          path: security-summary.md
+
+      - name: 📊 Overall Result
+        run: |
+          # Détermination du résultat global
+          if [[ "${{ needs.shellcheck.result }}" == "success" && 
+                "${{ needs.security-scan.result }}" == "success" && 
+                "${{ needs.permissions-check.result }}" == "success" && 
+                "${{ needs.best-practices-check.result }}" == "success" ]]; then
+            echo "🎉 All security and quality checks passed!"
+            exit 0
+          else
+            echo "❌ Some security or quality checks failed. Please review the results above."
+            exit 1
+          fi

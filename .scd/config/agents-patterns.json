@@ -1,0 +1,103 @@
+{
+  "agents": {
+    "coderabbit": {
+      "indicators": ["coderabbitai", "CodeRabbit", "AI-generated review", "coderabbit.ai"],
+      "author_patterns": ["coderabbitai", "coderabbit", "CodeRabbitAI"]
+    },
+    "github_copilot": {
+      "indicators": ["GitHub Copilot", "Copilot review", "copilot-chat", "github-copilot"],
+      "author_patterns": ["github-copilot", "copilot", "github-copilot-bot"]
+    },
+    "codex": {
+      "indicators": ["OpenAI Codex", "Codex review", "GPT-4", "openai-codex"],
+      "author_patterns": ["codex", "openai-codex", "gpt-4-bot"]
+    },
+    "generic_ai": {
+      "indicators": ["AI review", "Automated review", "Bot review", "AI-powered"],
+      "author_patterns": ["bot", "ai-", "automated", "-bot"]
+    }
+  },
+  "severity_patterns": {
+    "critical": {
+      "emoji": ["🔴", "❌", "🚨", "⛔", "💥"],
+      "keywords": ["Critical", "CRITICAL", "Severe", "Security", "Vulnerability", "Breaking", "Fatal", "Dangerous"]
+    },
+    "major": {
+      "emoji": ["🟠", "⚠️", "🟡", "⚡"],
+      "keywords": ["Major", "MAJOR", "Important", "Issue", "Problem", "Bug", "Error", "Significant"]
+    },
+    "minor": {
+      "emoji": ["🟡", "💡", "⚡", "⚪"],
+      "keywords": ["Minor", "MINOR", "Warning", "Suggestion", "Potential issue", "Improvement", "Consider"]
+    },
+    "trivial": {
+      "emoji": ["🔵", "ℹ️", "📝", "✨", "💭"],
+      "keywords": ["Info", "INFO", "Note", "Consider", "Tip", "Enhancement", "Style", "Format", "Nit", "Trivial"]
+    }
+  },
+  "category_patterns": {
+    "performance": {
+      "keywords": ["Performance", "Optimization", "Efficiency", "Speed", "Memory", "CPU", "Latency", "Throughput"],
+      "description": "Optimisations de performance et d'efficacité"
+    },
+    "security": {
+      "keywords": ["Security", "Vulnerability", "Authentication", "Authorization", "XSS", "SQL", "CSRF", "Injection"],
+      "description": "Sécurité et vulnérabilités"
+    },
+    "maintainability": {
+      "keywords": ["Maintainability", "Readability", "Code quality", "Refactor", "Clean", "DRY", "SOLID"],
+      "description": "Maintenabilité et qualité du code"
+    },
+    "testing": {
+      "keywords": ["Test", "Testing", "Coverage", "Assert", "Mock", "Unit test", "Integration", "E2E"],
+      "description": "Tests et couverture de code"
+    },
+    "documentation": {
+      "keywords": ["Documentation", "Comment", "README", "Docs", "JSDoc", "API doc", "Docstring"],
+      "description": "Documentation et commentaires"
+    },
+    "accessibility": {
+      "keywords": ["Accessibility", "A11y", "ARIA", "Screen reader", "WCAG", "Semantic", "Alt text"],
+      "description": "Accessibilité et standards web"
+    },
+    "type_safety": {
+      "keywords": ["Type", "TypeScript", "Interface", "Generic", "Typing", "Type annotation"],
+      "description": "Sécurité des types et typage"
+    },
+    "architecture": {
+      "keywords": ["Architecture", "Design pattern", "Structure", "Modularity", "Separation", "Coupling"],
+      "description": "Architecture et design patterns"
+    },
+    "error_handling": {
+      "keywords": ["Error", "Exception", "Try-catch", "Error handling", "Validation", "Null check"],
+      "description": "Gestion d'erreurs et validation"
+    },
+    "styling": {
+      "keywords": ["Style", "CSS", "Formatting", "Linting", "Prettier", "ESLint", "Indentation"],
+      "description": "Style de code et formatage"
+    }
+  },
+  "file_patterns": {
+    "frontend": {
+      "extensions": [".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte", ".css", ".scss", ".html"],
+      "frameworks": ["React", "Vue", "Angular", "Svelte", "Next.js"]
+    },
+    "backend": {
+      "extensions": [".py", ".java", ".go", ".rs", ".php", ".rb", ".cs"],
+      "frameworks": ["Django", "Flask", "Spring", "Express", "FastAPI"]
+    },
+    "config": {
+      "extensions": [".json", ".yaml", ".yml", ".toml", ".ini", ".env"],
+      "types": ["Configuration", "Environment", "Settings"]
+    },
+    "docs": {
+      "extensions": [".md", ".rst", ".txt", ".adoc"],
+      "types": ["Documentation", "README", "Changelog"]
+    }
+  },
+  "confidence_indicators": {
+    "high": ["definitely", "certainly", "clearly", "obviously", "must", "should always", "critical"],
+    "medium": ["should", "recommend", "suggest", "consider", "might want", "probably"],
+    "low": ["could", "maybe", "perhaps", "might", "optionally", "nit"]
+  }
+}

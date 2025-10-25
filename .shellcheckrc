@@ -1,0 +1,41 @@
+# Configuration de ShellCheck pour le projet CC-Skills
+# Ce fichier personnalise le comportement de ShellCheck selon les bonnes pratiques du guide
+
+# Désactiver certaines vérifications qui peuvent être trop strictes pour ce projet
+disable=SC1091,SC2164,SC2034
+
+# SC1091: Not following sourced files
+# Désactivé car nous utilisons souvent des fichiers .env et des sources externes
+# qui peuvent ne pas être présents lors de l'analyse statique
+
+# SC2164: Use 'cd ... || exit' or 'cd ... || return' in case cd fails
+# Désactivé car nous utilisons 'set -e' qui gère automatiquement les échecs de cd
+
+# SC2034: Variable appears unused
+# Désactivé car certaines variables peuvent être utilisées par des scripts externes
+# ou dans des contextes que ShellCheck ne peut pas détecter
+
+# Format de sortie préféré (gcc, checkstyle, diff, tty)
+format=tty
+
+# Niveau de sévérité minimum à reporter
+# Valeurs possibles: error, warning, info, style
+severity=warning
+
+# Shell à utiliser pour l'analyse (auto, sh, bash, dash, ksh)
+shell=bash
+
+# Activer les vérifications externes (permet de suivre les sources)
+external-sources=true
+
+# Vérifications spécifiques à activer (optionnel)
+# enable=
+
+# Exclure certains fichiers ou répertoires
+# exclude-dir=.git,node_modules,.scd/cache
+
+# Sources additionnelles à rechercher
+# source-path=SCRIPTDIR
+
+# Configuration pour les environnements CI/CD
+# Ces options peuvent être surchargées par les variables d'environnement SHELLCHECK_OPTS

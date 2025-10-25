@@ -1,0 +1,55 @@
+{
+  "name": "cc-skills",
+  "version": "1.0.0",
+  "description": "Claude Code Skills pour l'analyse des PR GitHub avec scripts bash sécurisés",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky",
+    "lint": "npm run lint:shell && npm run lint:secrets",
+    "lint:shell": "find . -name '*.sh' -not -path './.git/*' -not -path './node_modules/*' | xargs shellcheck",
+    "lint:secrets": "detect-secrets scan --baseline .secrets.baseline",
+    "format": "npm run format:shell",
+    "format:shell": "find . -name '*.sh' -not -path './.git/*' -not -path './node_modules/*' | xargs shfmt -w -s -i 2",
+    "security-check": "node scripts/bash-security-check.js",
+    "test": "npm run lint && npm run security-check",
+    "setup": "npm install && npm run prepare"
+  },
+  "keywords": [
+    "claude-code",
+    "skills",
+    "github",
+    "pr-analysis",
+    "bash",
+    "security"
+  ],
+  "author": "CC-Skills Team",
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "shellcheck": "^3.0.0",
+    "detect-secrets": "^1.0.0"
+  },
+  "lint-staged": {
+    "*.{sh,bash}": [
+      "shellcheck",
+      "shfmt -w -s -i 2"
+    ],
+    "*": [
+      "detect-secrets-hook --baseline .secrets.baseline",
+      "node scripts/bash-security-check.js"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/negus/cc-skills.git"
+  },
+  "bugs": {
+    "url": "https://github.com/negus/cc-skills/issues"
+  },
+  "homepage": "https://github.com/negus/cc-skills#readme"
+}

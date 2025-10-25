@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 🔒 Hook pre-commit pour CC-Skills
+# Basé sur le guide de sécurisation des scripts Bash
+
+echo "🔒 Exécution des vérifications de sécurité pre-commit..."
+
+# Exécution de lint-staged pour les fichiers modifiés
+npx lint-staged
+
+# Vérification globale de sécurité
+echo "🔍 Vérification de sécurité globale..."
+npm run security-check
+
+echo "✅ Vérifications pre-commit terminées!"

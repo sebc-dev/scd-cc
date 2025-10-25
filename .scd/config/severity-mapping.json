@@ -1,0 +1,95 @@
+{
+  "severity_order": ["critical", "major", "minor", "trivial"],
+  "folder_mapping": {
+    "critical": "🔴-critical",
+    "major": "🟠-major", 
+    "minor": "🟡-minor",
+    "trivial": "🔵-trivial"
+  },
+  "severity_weights": {
+    "critical": 10,
+    "major": 5,
+    "minor": 2,
+    "trivial": 1
+  },
+  "quality_score_thresholds": {
+    "excellent": {
+      "min_score": 90,
+      "max_critical": 0,
+      "max_major": 2,
+      "description": "Code de très haute qualité"
+    },
+    "good": {
+      "min_score": 75,
+      "max_critical": 1,
+      "max_major": 5,
+      "description": "Code de bonne qualité avec quelques améliorations possibles"
+    },
+    "acceptable": {
+      "min_score": 60,
+      "max_critical": 3,
+      "max_major": 10,
+      "description": "Code acceptable nécessitant des améliorations"
+    },
+    "needs_improvement": {
+      "min_score": 40,
+      "max_critical": 5,
+      "max_major": 15,
+      "description": "Code nécessitant des améliorations significatives"
+    },
+    "poor": {
+      "min_score": 0,
+      "max_critical": 999,
+      "max_major": 999,
+      "description": "Code nécessitant une refactorisation majeure"
+    }
+  },
+  "default_severity": "trivial",
+  "emoji_mapping": {
+    "critical": "🔴",
+    "major": "🟠", 
+    "minor": "🟡",
+    "trivial": "🔵"
+  },
+  "display_names": {
+    "critical": "Critique",
+    "major": "Majeur",
+    "minor": "Mineur", 
+    "trivial": "Trivial"
+  },
+  "action_recommendations": {
+    "critical": {
+      "priority": "immediate",
+      "timeframe": "< 24h",
+      "action": "Correction immédiate requise avant merge"
+    },
+    "major": {
+      "priority": "high",
+      "timeframe": "< 3 jours",
+      "action": "Correction recommandée avant merge"
+    },
+    "minor": {
+      "priority": "medium",
+      "timeframe": "< 1 semaine",
+      "action": "Amélioration suggérée pour le prochain cycle"
+    },
+    "trivial": {
+      "priority": "low",
+      "timeframe": "backlog",
+      "action": "Amélioration optionnelle selon disponibilité"
+    }
+  },
+  "statistics": {
+    "target_distribution": {
+      "critical": 5,
+      "major": 15,
+      "minor": 35,
+      "trivial": 45
+    },
+    "alert_thresholds": {
+      "critical_too_high": 10,
+      "major_too_high": 25,
+      "total_comments_high": 50
+    }
+  }
+}

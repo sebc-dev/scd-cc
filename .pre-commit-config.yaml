@@ -1,0 +1,17 @@
+# Configuration Husky + lint-staged pour CC-Skills
+# Remplace la configuration pre-commit Python par une approche JavaScript/Node.js
+
+# Ce fichier est conservé pour référence mais n'est plus utilisé
+# La nouvelle configuration utilise:
+# - package.json (scripts et lint-staged)
+# - .husky/pre-commit
+# - scripts/bash-security-check.js
+
+# Pour migrer vers Husky, exécutez:
+# npm install
+# npm run setup
+
+# Ancienne configuration pre-commit (désactivée)
+# repos: []
+
+# Note: Ce fichier peut être supprimé après migration complète vers Husky
