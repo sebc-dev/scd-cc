@@ -7,7 +7,7 @@
     "prepare": "husky",
     "lint": "npm run lint:shell && npm run lint:secrets",
     "lint:shell": "find . -name '*.sh' -not -path './.git/*' -not -path './node_modules/*' | xargs shellcheck",
-    "lint:secrets": "detect-secrets scan --baseline .secrets.baseline",
+    "lint:secrets": "echo '🔍 Secrets detection intégrée dans security-check'",
     "format": "npm run format:shell",
     "format:shell": "find . -name '*.sh' -not -path './.git/*' -not -path './node_modules/*' | xargs shfmt -w -s -i 2",
     "security-check": "node scripts/bash-security-check.js",
