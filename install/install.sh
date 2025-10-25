@@ -50,23 +50,14 @@ fi
 # Création de la structure locale
 echo -e "${BLUE}📁 Création de la structure de dossiers...${NC}"
 mkdir -p "$SKILLS_DIR"/{github-pr-collector/scripts,review-analyzer/resources}
-mkdir -p "$DATA_DIR"/{pr-data,config,cache,docs}
+mkdir -p "$DATA_DIR"/github-pr-collector/{data,cache,config}
+mkdir -p "$DATA_DIR"/review-analyzer/{data,cache,config}
 
 echo -e "${GREEN}✅ Structure créée:${NC}"
-echo "  📂 $SKILLS_DIR"
-echo "  📂 $DATA_DIR"
+echo "  📂 $SKILLS_DIR (Skills Claude Code)"
+echo "  📂 $DATA_DIR (Données par skill)"
 
-# Copie de la documentation principale
-echo -e "${BLUE}📚 Copie de la documentation...${NC}"
-readonly GUIDE_SOURCE="${PROJECT_ROOT}/.scd/docs/Guide_Skills_Claude_Code_Bash_GitHub_CodeRabbit.md"
-if [[ -f "$GUIDE_SOURCE" ]]; then
-    cp "$GUIDE_SOURCE" "${DATA_DIR}/docs/"
-    echo -e "${GREEN}✅ Guide principal copié dans ${DATA_DIR}/docs/${NC}"
-else
-    echo -e "${YELLOW}⚠️  Guide principal non trouvé: $GUIDE_SOURCE${NC}"
-fi
-
-# Note: Les fichiers ont été créés localement, pas de téléchargement depuis GitHub
+# Note: Les fichiers de Skills sont installés depuis le repository
 echo -e "${GREEN}✅ Configuration locale détectée${NC}"
 
 # Vérification des fichiers existants
@@ -82,7 +73,7 @@ else
     echo -e "${YELLOW}⚠️  Skill review-analyzer manquant${NC}"
 fi
 
-if [[ -f "$DATA_DIR/config/agents-patterns.json" ]]; then
+if [[ -f "$DATA_DIR/github-pr-collector/config/agents-patterns.json" ]]; then
     echo -e "${GREEN}✅ Configuration agents-patterns.json trouvée${NC}"
 else
     echo -e "${YELLOW}⚠️  Configuration agents-patterns.json manquante${NC}"
@@ -97,10 +88,10 @@ if [[ -f "${PROJECT_ROOT}/.gitignore" ]]; then
     if ! grep -q "^\.scd/" "${PROJECT_ROOT}/.gitignore" 2>/dev/null; then
         {
             echo ""
-            echo "# CC-Skills data"
-            echo ".scd/cache/"
-            echo ".scd/*.log"
-            echo "# Keep .scd/docs/ committed for documentation reference"
+            echo "# CC-Skills runtime data (keep config/ for each skill)"
+            echo ".scd/**/cache/"
+            echo ".scd/**/data/"
+            echo "!.scd/**/config/"
         } >> "${PROJECT_ROOT}/.gitignore"
         echo -e "${GREEN}✅ .gitignore mis à jour${NC}"
     else
@@ -120,4 +111,4 @@ echo "  1. Ouvrez Claude Code dans ce projet"
 echo "  2. Assurez-vous d'être authentifié avec GitHub CLI: gh auth login"
 echo "  3. Tapez: 'Analyse les PR en cours de ce repository'"
 echo ""
-echo -e "${BLUE}📖 Documentation: ${DATA_DIR}/docs/Guide_Skills_Claude_Code_Bash_GitHub_CodeRabbit.md${NC}"
+echo -e "${BLUE}📖 Documentation: https://github.com/sebc-dev/cc-skills/tree/main/docs${NC}"

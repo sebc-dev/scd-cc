@@ -50,7 +50,7 @@ Le script `generate-summary.sh` produit :
 
 ### Sortie
 
-Les données sont stockées dans `.scd/pr-data/` avec la structure :
+Les données sont stockées dans `.scd/github-pr-collector/data/pr-data/` avec la structure :
 ```
 pr-{number}/
 ├── 🔴-critical/     # Commentaires critiques

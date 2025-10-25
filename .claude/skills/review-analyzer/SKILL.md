@@ -17,7 +17,7 @@ Ce skill analyse les données de review des agents IA préalablement collectées
 ### 1. Analyse des Données Collectées
 
 Le skill examine les fichiers générés par `github-pr-collector` :
-- Lit les résumés de PR (`summary.md`)
+- Lit les résumés de PR dans `.scd/github-pr-collector/data/pr-data/` (`summary.md`)
 - Parse les données JSON structurées (`data.json`)
 - Analyse la distribution dans les dossiers par sévérité
 - Examine les commentaires individuels par agent
