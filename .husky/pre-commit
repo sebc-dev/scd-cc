@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 # 🔒 Hook pre-commit pour CC-Skills
 # Basé sur le guide de sécurisation des scripts Bash
