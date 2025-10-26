@@ -158,11 +158,11 @@ Pour activer rapidement toute la configuration :
 #!/bin/bash
 set -euo pipefail
 
-echo "🔒 Configuration des protections de sécurité pour CC-Skills..."
+echo "🔒 Configuration des protections de sécurité pour SCD-CC..."
 
 # Vérification que nous sommes dans le bon repository
-if ! git remote get-url origin | grep -q "cc-skills"; then
-    echo "❌ Ce script doit être exécuté dans le repository cc-skills"
+if ! git remote get-url origin | grep -q "scd-cc"; then
+    echo "❌ Ce script doit être exécuté dans le repository scd-cc"
     exit 1
 fi
 

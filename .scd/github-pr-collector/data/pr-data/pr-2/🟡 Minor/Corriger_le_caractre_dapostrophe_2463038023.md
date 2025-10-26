@@ -1,7 +1,8 @@
 # 🟡 Minor _⚠️ Potential issue_ Corriger le caractère d'apostrophe.
 
-- **Author**: coderabbitai[bot]
-- **URL**: https://github.com/sebc-dev/cc-skills/pull/2#discussion_r2463038023
+- **Auteur**: CodeRabbit Bot
+- **Date**: 2025-01-29T08:00:44Z
+- **URL**: https://github.com/sebc-dev/scd-cc/pull/2#discussion_r2463038023
 - **PR**: #2
 
 ## Description

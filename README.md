@@ -1,11 +1,11 @@
-# Architecture CC-Skills
+# Architecture SCD-CC
 
 Cette architecture implémente les Skills Claude Code pour l'analyse des Pull Requests GitHub avec support multi-agents IA.
 
 ## Structure du Projet
 
 ```
-cc-skills/
+scd-cc/
 ├── .claude/
 │   ├── agents/                    # Subagents Claude Code
 │   │   └── pr-review-analyzer.md  # Subagent d'analyse des PR
@@ -81,7 +81,7 @@ Configure la hiérarchie des sévérités :
 
 ```bash
 # Installation en une ligne
-curl -fsSL https://raw.githubusercontent.com/sebc-dev/cc-skills/main/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sebc-dev/scd-cc/main/install/install.sh | bash
 
 # Ou installation locale
 ./install/install.sh

@@ -1,4 +1,4 @@
-# CC-Skills - Fichiers à ignorer par Git
+# SCD-CC - Fichiers à ignorer par Git
 
 # Données et cache du projet
 .scd/cache/

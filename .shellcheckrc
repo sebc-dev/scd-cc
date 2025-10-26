@@ -1,4 +1,4 @@
-# Configuration de ShellCheck pour le projet CC-Skills
+# Configuration de ShellCheck pour le projet SCD-CC
 # Ce fichier personnalise le comportement de ShellCheck selon les bonnes pratiques du guide
 
 # Désactiver certaines vérifications qui peuvent être trop strictes pour ce projet

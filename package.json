@@ -1,6 +1,6 @@
 {
-  "name": "cc-skills",
-  "version": "1.0.0",
+  "name": "scd-cc",
+  "version": "2.0.0",
   "description": "Claude Code Skills pour l'analyse des PR GitHub avec scripts bash sécurisés",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "bash",
     "security"
   ],
-  "author": "CC-Skills Team",
+  "author": "SCD-CC Team",
   "license": "MIT",
   "devDependencies": {
     "husky": "^9.1.6",
@@ -41,10 +41,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/negus/cc-skills.git"
+    "url": "https://github.com/sebc-dev/scd-cc.git"
   },
   "bugs": {
-    "url": "https://github.com/negus/cc-skills/issues"
+    "url": "https://github.com/sebc-dev/scd-cc/issues"
   },
-  "homepage": "https://github.com/negus/cc-skills#readme"
+  "homepage": "https://github.com/sebc-dev/scd-cc#readme"
 }

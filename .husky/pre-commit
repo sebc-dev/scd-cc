@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# 🔒 Hook pre-commit pour CC-Skills
+# 🔒 Hook pre-commit pour SCD-CC
 # Basé sur le guide de sécurisation des scripts Bash
 
 echo "🔒 Exécution des vérifications de sécurité pre-commit..."

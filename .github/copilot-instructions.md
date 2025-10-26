@@ -1,7 +1,7 @@
-# CC-Skills: AI Agent Instructions
+# SCD-CC: AI Agent Instructions
 
 ## Project Overview
-CC-Skills is a Claude Code Skills framework for GitHub PR analysis with multi-agent IA support. The project emphasizes **bash script security** through automated validation and custom security checks.
+SCD-CC is a Claude Code Skills framework for GitHub PR analysis with multi-agent IA support. The project emphasizes **bash script security** through automated validation and custom security checks.
 
 ## Architecture
 

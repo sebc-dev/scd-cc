@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-# Script de collecte des données GitHub PR avec gestion multi-agents IA
-# Auteur: cc-skills
+# Script de collecte des données GitHub PR avec gestion CodeRabbit
+# Auteur: scd-cc
 # Version: 1.0.0
 
 # Configuration et variables globales

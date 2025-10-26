@@ -1,4 +1,4 @@
-# 🚀 Configuration Husky + JavaScript pour CC-Skills
+# 🚀 Configuration Husky + JavaScript pour SCD-CC
 
 Cette configuration remplace l'approche Python/pre-commit par une solution moderne basée sur **Node.js + Husky** pour une meilleure intégration avec les environnements de développement JavaScript/TypeScript.
 
@@ -18,7 +18,7 @@ Cette configuration remplace l'approche Python/pre-commit par une solution moder
 - **Husky** : Gestion des hooks Git
 - **lint-staged** : Traitement des fichiers modifiés uniquement
 - **ShellCheck** : Analyse statique des scripts Bash (npm ou système)
-- **Script personnalisé** : Vérifications de sécurité spécifiques à CC-Skills
+- **Script personnalisé** : Vérifications de sécurité spécifiques à SCD-CC
 
 ## 📋 Installation et Configuration
 

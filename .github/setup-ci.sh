@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Script d'activation rapide de la CI de sécurité pour CC-Skills
+# Script d'activation rapide de la CI de sécurité pour SCD-CC
 # Basé sur le guide "Sécurisation des Scripts Bash _ Bonnes Pratiques"
 
 # Déclaration et assignation séparées pour éviter de masquer les codes de retour
@@ -20,7 +20,7 @@ readonly YELLOW='\033[1;33m'
 readonly RED='\033[0;31m'
 readonly NC='\033[0m'
 
-echo -e "${BLUE}🔒 Configuration de la CI de Sécurité CC-Skills${NC}"
+echo -e "${BLUE}🔒 Configuration de la CI de Sécurité SCD-CC${NC}"
 echo -e "${BLUE}📂 Projet: $PROJECT_ROOT${NC}"
 echo ""
 
@@ -251,10 +251,6 @@ show_summary() {
 
 # Fonction principale
 main() {
-    echo -e "${BLUE}🔒 Activation de la CI de Sécurité CC-Skills${NC}"
-    echo "Basé sur le guide de sécurisation des scripts Bash"
-    echo ""
-    
     # Vérifications préliminaires
     if ! check_prerequisites; then
         exit 1

@@ -1,4 +1,4 @@
-# 🔒 CI de Sécurité pour CC-Skills
+# 🔒 CI de Sécurité pour SCD-CC
 
 Cette configuration implémente une CI complète basée sur le **Guide de Sécurisation des Scripts Bash** pour garantir la qualité et la sécurité de tous les scripts du projet.
 

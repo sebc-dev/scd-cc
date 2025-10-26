@@ -1,11 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-# CC-Skills Installation Script
+# SCD-CC Installation Script
 # Version: 2.0.0
 # Description: Installe les Skills et Subagents Claude Code pour l'analyse des PR GitHub
 
-readonly REPO_URL="https://github.com/sebc-dev/cc-skills"
+readonly REPO_URL="https://github.com/sebc-dev/scd-cc"
 readonly REPO_BRANCH="main"
 declare PROJECT_ROOT
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
@@ -24,7 +24,7 @@ readonly YELLOW='\033[1;33m'
 readonly RED='\033[0;31m'
 readonly NC='\033[0m'
 
-echo -e "${BLUE}🚀 Installation de CC-Skills dans le projet courant...${NC}"
+echo -e "${BLUE}🚀 Installation de SCD-CC dans le projet courant...${NC}"
 echo -e "${BLUE}📂 Projet détecté: $PROJECT_ROOT${NC}"
 
 # Vérification des prérequis
@@ -150,7 +150,7 @@ if [[ -f "${PROJECT_ROOT}/.gitignore" ]]; then
     if ! grep -q "^\.scd/" "${PROJECT_ROOT}/.gitignore" 2>/dev/null; then
         {
             echo ""
-            echo "# CC-Skills runtime data (v2.0.0)"
+            echo "# SCD-CC runtime data (v2.0.0)"
             echo ".scd/github-pr-collector/cache/"
             echo ".scd/github-pr-collector/data/"
             echo ".scd/*.log"
@@ -165,7 +165,7 @@ fi
 
 echo ""
 echo -e "${GREEN}╔══════════════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║         ✅ Installation CC-Skills v2.0.0 Terminée !                  ║${NC}"
+echo -e "${GREEN}║         ✅ Installation SCD-CC v2.0.0 Terminée !                     ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "${BLUE}� Composants installés:${NC}"
@@ -192,7 +192,7 @@ echo -e "     ${GREEN}\"Collecte les données des PR\"${NC}"
 echo -e "     ${GREEN}\"Utilise le subagent pr-review-analyzer\"${NC}"
 echo ""
 echo -e "${BLUE}📚 Documentation:${NC}"
-echo -e "  Guide complet: ${YELLOW}https://github.com/sebc-dev/cc-skills${NC}"
+echo -e "  Guide complet: ${YELLOW}https://github.com/sebc-dev/scd-cc${NC}"
 echo -e "  README:        ${YELLOW}README.md${NC}"
 echo ""
 echo -e "${GREEN}🎊 Profitez de l'architecture Skill+Subagent !${NC}"

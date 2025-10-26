@@ -222,7 +222,7 @@ Les scripts utilisent les ressources suivantes :
 set -euo pipefail
 
 # Script de collecte des données GitHub PR avec gestion CodeRabbit
-# Auteur: cc-skills
+# Auteur: scd-cc
 # Version: 1.0.0
 
 # Configuration et variables globales
@@ -492,7 +492,7 @@ fi
 set -euo pipefail
 
 # Script de parsing des métadonnées des agents de review IA
-# Auteur: cc-skills
+# Auteur: scd-cc
 # Version: 1.0.0
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -848,7 +848,7 @@ save_individual_comment() {
 $(echo "$comment_json" | jq -r '.body')
 
 ---
-*Généré automatiquement par cc-skills*
+*Généré automatiquement par scd-cc*
 EOF
 }
 
@@ -915,7 +915,7 @@ EOF
 - **Commentaires triviaux:** [🔵-trivial/](./🔵-trivial/)
 
 ---
-*Généré le $(date '+%Y-%m-%d %H:%M:%S') par cc-skills*
+*Généré le $(date '+%Y-%m-%d %H:%M:%S') par scd-cc*
 EOF
     
     log "INFO" "Résumé généré: $summary_file"
@@ -996,7 +996,7 @@ fi
 set -euo pipefail
 
 # Script de génération de résumé concis avec validation d'étapes
-# Auteur: cc-skills
+# Auteur: scd-cc
 # Version: 1.0.0
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -1118,7 +1118,7 @@ EOF
     cat >> "$global_summary" << EOF
 
 ---
-*Généré automatiquement par cc-skills*
+*Généré automatiquement par scd-cc*
 EOF
     
     echo -e "${GREEN}✅ Rapport global créé : $global_summary${NC}"
@@ -1207,7 +1207,7 @@ display_final_stats() {
 
 # Fonction principale
 main() {
-    echo -e "${BLUE}🚀 Génération du résumé global - cc-skills${NC}"
+    echo -e "${BLUE}🚀 Génération du résumé global - scd-cc${NC}"
     echo ""
     
     # Validation de la structure
@@ -1483,16 +1483,16 @@ jobs:
 #!/bin/bash
 set -euo pipefail
 
-# CC-Skills Installation Script
+# SCD-CC Installation Script
 # Version: 1.0.0
 
-readonly REPO_URL="https://github.com/negus/cc-skills"
+readonly REPO_URL="https://github.com/negus/scd-cc"
 readonly PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 readonly SKILLS_DIR="${PROJECT_ROOT}/.claude/skills"
 readonly DATA_DIR="${PROJECT_ROOT}/.scd"
 
 install_cc_skills() {
-    echo "🚀 Installation de CC-Skills dans le projet courant..."
+    echo "🚀 Installation de SCD-CC dans le projet courant..."
     echo "📂 Projet détecté: $PROJECT_ROOT"
     
     # Vérification des prérequis
@@ -1541,7 +1541,7 @@ install_cc_skills() {
     if [[ -f "${PROJECT_ROOT}/.gitignore" ]]; then
         if ! grep -q "^\.scd/" "${PROJECT_ROOT}/.gitignore"; then
             echo "" >> "${PROJECT_ROOT}/.gitignore"
-            echo "# CC-Skills data" >> "${PROJECT_ROOT}/.gitignore"
+            echo "# SCD-CC data" >> "${PROJECT_ROOT}/.gitignore"
             echo ".scd/cache/" >> "${PROJECT_ROOT}/.gitignore"
             echo ".scd/*.log" >> "${PROJECT_ROOT}/.gitignore"
             echo "✅ .gitignore mis à jour"
@@ -1563,7 +1563,7 @@ install_cc_skills
 ### **Installation en Une Ligne**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/negus/cc-skills/main/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/negus/scd-cc/main/install/install.sh | bash
 ```
 
 ---
@@ -1585,7 +1585,7 @@ curl -fsSL https://raw.githubusercontent.com/negus/cc-skills/main/install/instal
 
 ```bash
 # Script cron pour collecte automatique
-0 9 * * 1-5 /home/user/.cc-skills/skills/github-pr-collector/scripts/collect-pr-data.sh
+0 9 * * 1-5 /home/user/.scd-cc/skills/github-pr-collector/scripts/collect-pr-data.sh
 
 # Analyse hebdomadaire dans Claude Code
 "Génère le rapport hebdomadaire CodeRabbit"
@@ -1604,10 +1604,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install CC-Skills
-        run: curl -fsSL https://raw.githubusercontent.com/negus/cc-skills/main/install/install.sh | bash
+      - name: Install SCD-CC
+        run: curl -fsSL https://raw.githubusercontent.com/negus/scd-cc/main/install/install.sh | bash
       - name: Collect PR Data
-        run: ~/.cc-skills/skills/github-pr-collector/scripts/collect-pr-data.sh
+        run: ~/.scd-cc/skills/github-pr-collector/scripts/collect-pr-data.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -1622,8 +1622,8 @@ Les patterns de détection CodeRabbit évoluent. Le fichier `.scd/config/coderab
 
 ```bash
 # Mise à jour manuelle
-curl -fsSL https://raw.githubusercontent.com/negus/cc-skills/main/config/coderabbit-patterns.json \
-  > ~/.cc-skills/.scd/config/coderabbit-patterns.json
+curl -fsSL https://raw.githubusercontent.com/negus/scd-cc/main/config/coderabbit-patterns.json \
+  > ~/.scd-cc/.scd/config/coderabbit-patterns.json
 ```
 
 ### **Extensibilité**
@@ -1638,10 +1638,10 @@ Le système est conçu pour être extensible :
 
 ```bash
 # Vérification des logs
-tail -f ~/.cc-skills/.scd/collect-pr.log
+tail -f ~/.scd-cc/.scd/collect-pr.log
 
 # Nettoyage périodique
-find ~/.cc-skills/.scd/cache -type f -mtime +7 -delete
+find ~/.scd-cc/.scd/cache -type f -mtime +7 -delete
 ```
 
 ---
@@ -1660,7 +1660,7 @@ Ce guide fournit un framework complet pour créer des Skills Claude Code basés 
 
 ### **Prochaines Étapes**
 
-1. Cloner ce guide dans votre projet cc-skills
+1. Cloner ce guide dans votre projet scd-cc
 2. Adapter les patterns CodeRabbit à votre contexte
 3. Tester l'installation avec le script curl
 4. Personnaliser les templates d'analyse

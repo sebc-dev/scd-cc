@@ -197,7 +197,7 @@ class BashSecurityChecker {
 
   async run() {
     this.log('🔒 Vérification de Sécurité des Scripts Bash', colors.bold + colors.blue);
-    this.log('Basé sur le guide de sécurisation CC-Skills\n', colors.blue);
+    this.log('Basé sur le guide de sécurisation SCD-CC\n', colors.blue);
 
     const scripts = this.findShellScripts();
     
