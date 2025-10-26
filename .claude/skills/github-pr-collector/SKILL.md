@@ -47,6 +47,27 @@ Le script génère automatiquement :
 - "Que disent les agents de review sur les dernières PR ?"
 - "Donne-moi un résumé des reviews des PR ouvertes"
 - "Quels sont les problèmes identifiés par les agents IA ?"
+- "Collecte les données des PR pour analyse"
+
+### Workflow Recommandé
+
+**Étape 1 : Collecte des données** (ce skill)
+```
+"Collecte les données des PR en cours"
+```
+
+**Étape 2 : Analyse approfondie** (subagent pr-review-analyzer)
+```
+"Utilise le subagent pr-review-analyzer pour analyser les données collectées"
+ou simplement
+"Analyse les données des PR collectées"
+```
+
+Le subagent `pr-review-analyzer` dispose de capacités d'analyse avancées :
+- Génération d'insights et de tendances
+- Identification de patterns récurrents
+- Recommandations d'amélioration priorisées
+- Rapports exécutifs et techniques personnalisés
 
 ### Sortie
 

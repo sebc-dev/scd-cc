@@ -6,15 +6,32 @@ CC-Skills is a Claude Code Skills framework for GitHub PR analysis with multi-ag
 ## Architecture
 
 ### Core Components
+- **`.claude/agents/`** - Claude Code Subagents (specialized AI assistants)
+  - `pr-review-analyzer.md` - Analyzes collected data, generates insights, recommendations
+  - `EXAMPLES.md` - Detailed usage examples for subagents
 - **`.claude/skills/`** - Claude Code Skills (local installation)
   - `github-pr-collector/` - Collects PR data from GitHub CLI, categorizes by severity
-  - `review-analyzer/` - Analyzes collected data, generates insights
 - **`.scd/`** - Runtime data storage (gitignored except config)
   - `pr-data/` - PR analysis results organized by severity (🔴 critical, 🟠 major, 🟡 minor, 🔵 trivial)
   - `config/` - Agent patterns (`agents-patterns.json`) and severity mapping
   - `cache/` - Temporary data
 - **`scripts/`** - Node.js validation scripts
   - `bash-security-check.js` - Custom security validator enforcing project bash standards
+
+### Architecture Pattern: Skill + Subagent
+
+**Skill (github-pr-collector)**: Bash-based deterministic tasks
+- Collects PR data via GitHub CLI
+- Parses and classifies comments by severity
+- Generates structured Markdown files
+- Token-efficient preprocessing
+
+**Subagent (pr-review-analyzer)**: AI-powered analysis
+- Reads structured data from `.scd/pr-data/`
+- Generates insights, trends, recommendations
+- Produces executive/technical reports
+- Separate context window (doesn't pollute main conversation)
+- Read-only tools (Read, Grep, Glob) for security
 
 ### Technology Stack
 - **Node.js 18+** for tooling and validation
@@ -130,7 +147,10 @@ Warnings = non-blocking but should be reviewed
 
 ## Key Files for Context
 
-- **`README.md`** - Architecture overview, installation steps
+- **`README.md`** - Architecture overview, Skill+Subagent pattern, installation
+- **`.claude/agents/pr-review-analyzer.md`** - Subagent definition and system prompt
+- **`.claude/agents/EXAMPLES.md`** - Detailed subagent usage examples
+- **`.claude/skills/github-pr-collector/SKILL.md`** - Skill definition for data collection
 - **`HUSKY-SETUP.md`** - Why Node.js hooks replace Python pre-commit
 - **`CI-SECURITY.md`** - Complete CI/CD security implementation guide
 - **`package.json`** - All npm scripts and lint-staged config
@@ -149,6 +169,13 @@ Warnings = non-blocking but should be reviewed
 1. Edit `.scd/config/agents-patterns.json`
 2. Add detection patterns and severity mappings
 3. Update documentation in relevant SKILL.md files
+4. Test with actual PR data to validate detection
+
+### Using the Subagent
+The `pr-review-analyzer` subagent is invoked automatically or explicitly:
+- Automatic: "Analyse les PR collectées"
+- Explicit: "Utilise le subagent pr-review-analyzer pour générer un rapport exécutif"
+- See `.claude/agents/EXAMPLES.md` for detailed usage patterns
 
 ### Troubleshooting Failed Checks
 ```bash
@@ -163,6 +190,9 @@ git commit --no-verify
 ```
 
 ## References
+- Architecture: `README.md` (Skill+Subagent pattern)
+- Subagent examples: `.claude/agents/EXAMPLES.md`
 - Security guide: `docs/bash/Sécurisation des Scripts Bash _ Bonnes Pratiques.md`
 - Skills guide: `docs/Guide_Skills_Claude_Code_Bash_GitHub_CodeRabbit.md`
+- Subagents doc: `docs/claude-code/Subagents - Claude Docs.md`
 - Branch protection: `.github/BRANCH_PROTECTION.md`
