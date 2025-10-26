@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # CC-Skills Installation Script
-# Version: 1.0.0
-# Description: Installe les Skills Claude Code pour l'analyse des PR GitHub
+# Version: 2.0.0
+# Description: Installe les Skills et Subagents Claude Code pour l'analyse des PR GitHub
 
 readonly REPO_URL="https://github.com/sebc-dev/cc-skills"
 readonly REPO_BRANCH="main"
@@ -11,6 +11,7 @@ declare PROJECT_ROOT
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 readonly PROJECT_ROOT
 readonly SKILLS_DIR="${PROJECT_ROOT}/.claude/skills"
+readonly AGENTS_DIR="${PROJECT_ROOT}/.claude/agents"
 readonly DATA_DIR="${PROJECT_ROOT}/.scd"
 TEMP_DIR=$(mktemp -d)
 readonly TEMP_DIR
@@ -53,16 +54,19 @@ fi
 
 # Création de la structure locale
 echo -e "${BLUE}📁 Création de la structure de dossiers...${NC}"
-mkdir -p "$SKILLS_DIR"/{github-pr-collector/scripts,review-analyzer/resources}
-mkdir -p "$DATA_DIR"/github-pr-collector/{data,cache,config}
-mkdir -p "$DATA_DIR"/review-analyzer/{data,cache,config}
+mkdir -p "$SKILLS_DIR/github-pr-collector/scripts"
+mkdir -p "$AGENTS_DIR"
+mkdir -p "$DATA_DIR/pr-data"
+mkdir -p "$DATA_DIR/config"
+mkdir -p "$DATA_DIR/cache"
 
 echo -e "${GREEN}✅ Structure créée:${NC}"
 echo "  📂 $SKILLS_DIR (Skills Claude Code)"
-echo "  📂 $DATA_DIR (Données par skill)"
+echo "  📂 $AGENTS_DIR (Subagents Claude Code)"
+echo "  📂 $DATA_DIR (Données et configuration)"
 
-# Téléchargement des Skills depuis le repository
-echo -e "${BLUE}📥 Téléchargement des Skills depuis le repository...${NC}"
+# Téléchargement des composants depuis le repository
+echo -e "${BLUE}📥 Téléchargement depuis le repository (v2.0.0)...${NC}"
 
 # Fonction pour télécharger un fichier depuis GitHub
 download_file() {
@@ -90,26 +94,28 @@ download_file() {
     fi
 }
 
-# Télécharger les fichiers du skill github-pr-collector
+# Télécharger le skill github-pr-collector
 echo -e "${BLUE}📦 Installation du skill: github-pr-collector${NC}"
 download_file ".claude/skills/github-pr-collector/SKILL.md" \
     "$SKILLS_DIR/github-pr-collector/SKILL.md"
 download_file ".claude/skills/github-pr-collector/scripts/collect-pr-data.sh" \
     "$SKILLS_DIR/github-pr-collector/scripts/collect-pr-data.sh"
 
-# Télécharger les fichiers du skill review-analyzer
-echo -e "${BLUE}📦 Installation du skill: review-analyzer${NC}"
-download_file ".claude/skills/review-analyzer/SKILL.md" \
-    "$SKILLS_DIR/review-analyzer/SKILL.md"
-download_file ".claude/skills/review-analyzer/resources/analysis-templates.md" \
-    "$SKILLS_DIR/review-analyzer/resources/analysis-templates.md" || true
+# Télécharger le subagent pr-review-analyzer
+echo -e "${BLUE}🤖 Installation du subagent: pr-review-analyzer${NC}"
+download_file ".claude/agents/pr-review-analyzer.md" \
+    "$AGENTS_DIR/pr-review-analyzer.md"
+download_file ".claude/agents/EXAMPLES.md" \
+    "$AGENTS_DIR/EXAMPLES.md"
+download_file ".claude/agents/README.md" \
+    "$AGENTS_DIR/README.md"
 
 # Télécharger les fichiers de configuration
 echo -e "${BLUE}⚙️  Installation des fichiers de configuration${NC}"
-download_file ".scd/github-pr-collector/config/agents-patterns.json" \
-    "$DATA_DIR/github-pr-collector/config/agents-patterns.json"
-download_file ".scd/github-pr-collector/config/severity-mapping.json" \
-    "$DATA_DIR/github-pr-collector/config/severity-mapping.json"
+download_file ".scd/config/agents-patterns.json" \
+    "$DATA_DIR/config/agents-patterns.json"
+download_file ".scd/config/severity-mapping.json" \
+    "$DATA_DIR/config/severity-mapping.json"
 
 # Vérification de l'installation
 echo -e "${BLUE}🔍 Vérification de l'installation...${NC}"
@@ -117,9 +123,11 @@ echo -e "${BLUE}🔍 Vérification de l'installation...${NC}"
 readonly -a REQUIRED_FILES=(
     "$SKILLS_DIR/github-pr-collector/SKILL.md"
     "$SKILLS_DIR/github-pr-collector/scripts/collect-pr-data.sh"
-    "$SKILLS_DIR/review-analyzer/SKILL.md"
-    "$DATA_DIR/github-pr-collector/config/agents-patterns.json"
-    "$DATA_DIR/github-pr-collector/config/severity-mapping.json"
+    "$AGENTS_DIR/pr-review-analyzer.md"
+    "$AGENTS_DIR/EXAMPLES.md"
+    "$AGENTS_DIR/README.md"
+    "$DATA_DIR/config/agents-patterns.json"
+    "$DATA_DIR/config/severity-mapping.json"
 )
 
 install_success=true
@@ -149,10 +157,11 @@ if [[ -f "${PROJECT_ROOT}/.gitignore" ]]; then
     if ! grep -q "^\.scd/" "${PROJECT_ROOT}/.gitignore" 2>/dev/null; then
         {
             echo ""
-            echo "# CC-Skills runtime data (keep config/ for each skill)"
-            echo ".scd/**/cache/"
-            echo ".scd/**/data/"
-            echo "!.scd/**/config/"
+            echo "# CC-Skills runtime data (v2.0.0)"
+            echo ".scd/cache/"
+            echo ".scd/pr-data/"
+            echo ".scd/*.log"
+            echo "!.scd/config/"
         } >> "${PROJECT_ROOT}/.gitignore"
         echo -e "${GREEN}✅ .gitignore mis à jour${NC}"
     else
@@ -163,13 +172,37 @@ else
 fi
 
 echo ""
-echo -e "${GREEN}✅ Installation terminée avec succès!${NC}"
-echo -e "${BLUE}📂 Skills installés dans: $SKILLS_DIR${NC}"
-echo -e "${BLUE}📊 Données stockées dans: $DATA_DIR${NC}"
+echo -e "${GREEN}╔══════════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║         ✅ Installation CC-Skills v2.0.0 Terminée !                  ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${BLUE}� Composants installés:${NC}"
+echo -e "  ${GREEN}✅${NC} Skill:    github-pr-collector (collecte de données)"
+echo -e "  ${GREEN}✅${NC} Subagent: pr-review-analyzer (analyse IA)"
+echo ""
+echo -e "${BLUE}📂 Emplacements:${NC}"
+echo -e "  Skills:    $SKILLS_DIR"
+echo -e "  Subagents: $AGENTS_DIR"
+echo -e "  Données:   $DATA_DIR"
 echo ""
 echo -e "${YELLOW}🚀 Pour commencer:${NC}"
-echo "  1. Ouvrez Claude Code dans ce projet"
-echo "  2. Assurez-vous d'être authentifié avec GitHub CLI: gh auth login"
-echo "  3. Tapez: 'Analyse les PR en cours de ce repository'"
 echo ""
-echo -e "${BLUE}📖 Documentation: https://github.com/sebc-dev/cc-skills/tree/main/docs${NC}"
+echo -e "  ${BLUE}1.${NC} Authentifiez-vous avec GitHub CLI (si pas déjà fait):"
+echo -e "     ${GREEN}gh auth login${NC}"
+echo ""
+echo -e "  ${BLUE}2.${NC} Ouvrez Claude Code dans ce projet"
+echo ""
+echo -e "  ${BLUE}3.${NC} Lancez une analyse complète:"
+echo -e "     ${GREEN}\"Analyse les PR en cours de ce repository\"${NC}"
+echo ""
+echo -e "     ${BLUE}Ou en deux étapes:${NC}"
+echo -e "     ${GREEN}\"Collecte les données des PR\"${NC}"
+echo -e "     ${GREEN}\"Utilise le subagent pr-review-analyzer\"${NC}"
+echo ""
+echo -e "${BLUE}� Documentation:${NC}"
+echo -e "  Architecture:  ${YELLOW}ARCHITECTURE-PATTERN.md${NC}"
+echo -e "  Migration:     ${YELLOW}MIGRATION-SKILL-TO-SUBAGENT.md${NC}"
+echo -e "  Exemples:      ${YELLOW}.claude/agents/EXAMPLES.md${NC}"
+echo -e "  Guide complet: ${YELLOW}https://github.com/sebc-dev/cc-skills${NC}"
+echo ""
+echo -e "${GREEN}🎊 Profitez de l'architecture Skill+Subagent !${NC}"
