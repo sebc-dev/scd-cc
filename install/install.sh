@@ -56,14 +56,12 @@ fi
 echo -e "${BLUE}📁 Création de la structure de dossiers...${NC}"
 mkdir -p "$SKILLS_DIR/github-pr-collector/scripts"
 mkdir -p "$AGENTS_DIR"
-mkdir -p "$DATA_DIR/pr-data"
-mkdir -p "$DATA_DIR/config"
-mkdir -p "$DATA_DIR/cache"
+mkdir -p "$DATA_DIR/github-pr-collector/"{data,cache,config}
 
 echo -e "${GREEN}✅ Structure créée:${NC}"
 echo "  📂 $SKILLS_DIR (Skills Claude Code)"
 echo "  📂 $AGENTS_DIR (Subagents Claude Code)"
-echo "  📂 $DATA_DIR (Données et configuration)"
+echo "  📂 $DATA_DIR/github-pr-collector/ (Données et configuration)"
 
 # Téléchargement des composants depuis le repository
 echo -e "${BLUE}📥 Téléchargement depuis le repository (v2.0.0)...${NC}"
@@ -105,17 +103,14 @@ download_file ".claude/skills/github-pr-collector/scripts/collect-pr-data.sh" \
 echo -e "${BLUE}🤖 Installation du subagent: pr-review-analyzer${NC}"
 download_file ".claude/agents/pr-review-analyzer.md" \
     "$AGENTS_DIR/pr-review-analyzer.md"
-download_file ".claude/agents/EXAMPLES.md" \
-    "$AGENTS_DIR/EXAMPLES.md"
-download_file ".claude/agents/README.md" \
-    "$AGENTS_DIR/README.md"
 
 # Télécharger les fichiers de configuration
 echo -e "${BLUE}⚙️  Installation des fichiers de configuration${NC}"
-download_file ".scd/config/agents-patterns.json" \
-    "$DATA_DIR/config/agents-patterns.json"
-download_file ".scd/config/severity-mapping.json" \
-    "$DATA_DIR/config/severity-mapping.json"
+mkdir -p "$DATA_DIR/github-pr-collector/config"
+download_file ".scd/github-pr-collector/config/agents-patterns.json" \
+    "$DATA_DIR/github-pr-collector/config/agents-patterns.json"
+download_file ".scd/github-pr-collector/config/severity-mapping.json" \
+    "$DATA_DIR/github-pr-collector/config/severity-mapping.json"
 
 # Vérification de l'installation
 echo -e "${BLUE}🔍 Vérification de l'installation...${NC}"
@@ -124,10 +119,8 @@ readonly -a REQUIRED_FILES=(
     "$SKILLS_DIR/github-pr-collector/SKILL.md"
     "$SKILLS_DIR/github-pr-collector/scripts/collect-pr-data.sh"
     "$AGENTS_DIR/pr-review-analyzer.md"
-    "$AGENTS_DIR/EXAMPLES.md"
-    "$AGENTS_DIR/README.md"
-    "$DATA_DIR/config/agents-patterns.json"
-    "$DATA_DIR/config/severity-mapping.json"
+    "$DATA_DIR/github-pr-collector/config/agents-patterns.json"
+    "$DATA_DIR/github-pr-collector/config/severity-mapping.json"
 )
 
 install_success=true
@@ -158,10 +151,9 @@ if [[ -f "${PROJECT_ROOT}/.gitignore" ]]; then
         {
             echo ""
             echo "# CC-Skills runtime data (v2.0.0)"
-            echo ".scd/cache/"
-            echo ".scd/pr-data/"
+            echo ".scd/github-pr-collector/cache/"
+            echo ".scd/github-pr-collector/data/"
             echo ".scd/*.log"
-            echo "!.scd/config/"
         } >> "${PROJECT_ROOT}/.gitignore"
         echo -e "${GREEN}✅ .gitignore mis à jour${NC}"
     else
@@ -183,7 +175,7 @@ echo ""
 echo -e "${BLUE}📂 Emplacements:${NC}"
 echo -e "  Skills:    $SKILLS_DIR"
 echo -e "  Subagents: $AGENTS_DIR"
-echo -e "  Données:   $DATA_DIR"
+echo -e "  Config:    $DATA_DIR/github-pr-collector/config/"
 echo ""
 echo -e "${YELLOW}🚀 Pour commencer:${NC}"
 echo ""
@@ -199,10 +191,8 @@ echo -e "     ${BLUE}Ou en deux étapes:${NC}"
 echo -e "     ${GREEN}\"Collecte les données des PR\"${NC}"
 echo -e "     ${GREEN}\"Utilise le subagent pr-review-analyzer\"${NC}"
 echo ""
-echo -e "${BLUE}� Documentation:${NC}"
-echo -e "  Architecture:  ${YELLOW}ARCHITECTURE-PATTERN.md${NC}"
-echo -e "  Migration:     ${YELLOW}MIGRATION-SKILL-TO-SUBAGENT.md${NC}"
-echo -e "  Exemples:      ${YELLOW}.claude/agents/EXAMPLES.md${NC}"
+echo -e "${BLUE}📚 Documentation:${NC}"
 echo -e "  Guide complet: ${YELLOW}https://github.com/sebc-dev/cc-skills${NC}"
+echo -e "  README:        ${YELLOW}README.md${NC}"
 echo ""
 echo -e "${GREEN}🎊 Profitez de l'architecture Skill+Subagent !${NC}"
