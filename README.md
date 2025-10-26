@@ -8,8 +8,7 @@ Cette architecture implémente les Skills Claude Code pour l'analyse des Pull Re
 cc-skills/
 ├── .claude/
 │   ├── agents/                    # Subagents Claude Code
-│   │   ├── pr-review-analyzer.md  # Subagent d'analyse des PR
-│   │   └── EXAMPLES.md           # Exemples d'utilisation des subagents
+│   │   └── pr-review-analyzer.md  # Subagent d'analyse des PR
 │   └── skills/                    # Skills Claude Code
 │       └── github-pr-collector/   # Skill de collecte des PR
 │           ├── SKILL.md          # Définition du skill
@@ -82,7 +81,7 @@ Configure la hiérarchie des sévérités :
 
 ```bash
 # Installation en une ligne
-curl -fsSL https://raw.githubusercontent.com/negus/cc-skills/main/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sebc-dev/cc-skills/main/install/install.sh | bash
 
 # Ou installation locale
 ./install/install.sh
