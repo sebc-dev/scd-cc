@@ -70,11 +70,22 @@ download_file() {
     local dest_path="$2"
     local url="${REPO_URL}/raw/${REPO_BRANCH}/${file_path}"
     
-    if curl -sSfL "$url" -o "$dest_path"; then
-        echo -e "${GREEN}  ✅ ${file_path}${NC}"
-        return 0
+    # Créer le répertoire parent si nécessaire
+    local dest_dir
+    dest_dir=$(dirname "$dest_path")
+    mkdir -p "$dest_dir"
+    
+    if curl -sSfL "$url" -o "$dest_path" 2>/dev/null; then
+        if [[ -f "$dest_path" ]] && [[ -s "$dest_path" ]]; then
+            echo -e "${GREEN}  ✅ ${file_path}${NC}"
+            return 0
+        else
+            echo -e "${RED}  ❌ Fichier téléchargé mais vide: ${file_path}${NC}"
+            return 1
+        fi
     else
-        echo -e "${YELLOW}  ⚠️  Échec du téléchargement: ${file_path}${NC}"
+        echo -e "${RED}  ❌ Échec du téléchargement: ${file_path}${NC}"
+        echo -e "${YELLOW}     URL: ${url}${NC}"
         return 1
     fi
 }
